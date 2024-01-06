@@ -1,8 +1,11 @@
 import { Component } from 'react';
 
+import Block from './Block/Block';
+import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
+import Statistics from './Statistics/Statistics';
+import Notification from './Notification/Notification';
 
-
-import styles from './feedback.modules.css';
+import styles from './feedback.module.css';
 
 class Feedback extends Component {
     static feedbackOptions = ['good', 'neutral', 'bad']
@@ -28,7 +31,7 @@ class Feedback extends Component {
         return Number(((value / total) * 100).toFixed(2));
     }
 
-    leaveFeedback(keyName) {
+    leaveFeedback = (keyName) => {
         this.setState(prevState => { 
             return {
                 [keyName]: prevState[keyName] + 1
@@ -39,27 +42,18 @@ class Feedback extends Component {
     render() {
         const { good, neutral, bad } = this.state;
 
-        const buttonElements = Feedback.feedbackOptions.map(name => <button onClick={(()=> this.leaveFeedback(name))} key={name}>{name}</button>)
-
-        // const total = this.calcTotal();
+        const total = this.calcTotal();
 
         const positivePercentage = this.calcPercentage("good");
 
         return (
             <div className={styles.wrapper}>
-                <div className={styles.block}>
-                    <h2 className={styles.blockTitle}>Please leave feedback</h2>
-                    {buttonElements}
-                </div>
-                <h2 className={styles.blockTitle}>Statistics</h2>
-                <p>Good: {good}</p>
-                <p>Neutral: {neutral}</p>
-                <p>Bad: {bad}</p>
-                <p>Positive feedback: {positivePercentage}</p>
-                <div>
-
-                </div>
-            </div>
+                <Block title='Please leave feedback' >
+                    <FeedbackOptions options={Feedback.feedbackOptions} leaveFeedback={this.leaveFeedback}/>
+                </Block>
+                <Block title='Statistics'>
+                    {this.calcTotal() ? (<Statistics good={good} neutral={neutral} bad={bad} total={total} positivePercentage={positivePercentage} />) : (<Notification title= 'There is no feedback'/>)}
+                </Block></div>
         )
     }
 }
